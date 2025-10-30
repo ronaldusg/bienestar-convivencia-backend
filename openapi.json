@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Bienestar y Convivencia API",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "http://localhost:4000/api" }],
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "role": { "type": "string", "enum": ["student","admin"] },
+          "faculty": { "type": "string" },
+          "nationality": { "type": "string" },
+          "interests": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "location": { "type": "object",
+            "properties": { "name": { "type": "string" }, "lat": { "type": "number" }, "lng": { "type": "number" } }
+          },
+          "startAt": { "type": "string", "format": "date-time" },
+          "endAt": { "type": "string", "format": "date-time" },
+          "capacity": { "type": "number" }
+        }
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/auth/login": { "post": { "summary": "Login", "requestBody": { "required": true }, "responses": { "200": { "description": "OK" } } } },
+    "/auth/register": { "post": { "summary": "Register", "requestBody": { "required": true }, "responses": { "201": { "description": "Created" } } } },
+    "/auth/me": { "get": { "summary": "Get current user", "responses": { "200": { "description": "OK" } } } },
+    "/events": { "get": { "summary": "List events", "parameters": [], "responses": { "200": { "description": "OK" } } } }
+  }
+}
