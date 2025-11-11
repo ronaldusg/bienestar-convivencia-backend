@@ -72,4 +72,26 @@ async function leaveRoute(req, res, next) {
   }
 }
 
-module.exports = { listRoutes, getRoute, createRoute, updateRoute, joinRoute, leaveRoute };
+async function deleteRoute(req, res) {
+  try {
+    const { id } = req.params;
+
+    const route = await Route.findById(id);
+    if (!route) {
+      return res.status(404).json({ message: 'Ruta no encontrada' });
+    }
+
+    // Si verifyToken añade el usuario a req.user:
+    if (req.user?.id && String(route.driverId) !== String(req.user.id)) {
+      return res.status(403).json({ message: 'No autorizado' });
+    }
+
+    await route.deleteOne();
+    return res.json({ message: 'Ruta eliminada' });
+  } catch (err) {
+    console.error('deleteRoute error:', err);
+    return res.status(500).json({ message: 'Error al eliminar la ruta' });
+  }
+}
+
+module.exports = { listRoutes, getRoute, createRoute, updateRoute, joinRoute, leaveRoute, deleteRoute };

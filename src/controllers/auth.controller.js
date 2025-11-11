@@ -13,11 +13,12 @@ function signToken(user) {
 
 async function register(req, res, next) {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role, faculty } = req.body;
     const exists = await User.findOne({ email });
     if (exists) return badRequest(res, 'Email already in use');
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({ name, email, passwordHash, role: 'student' });
+    //const user = await User.create({ name, email, passwordHash, role: 'student' });
+    const user = await User.create({ name, email, passwordHash, role, faculty });
     const token = signToken(user);
     const userSafe = { id: user._id, name: user.name, email: user.email, role: user.role, faculty: user.faculty, nationality: user.nationality, interests: user.interests };
     return created(res, { token, user: userSafe });

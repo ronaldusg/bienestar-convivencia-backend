@@ -41,4 +41,17 @@ async function updateUser(req, res, next) {
   }
 }
 
-module.exports = { listUsers, getUser, updateUser };
+async function remove(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) return notFound(res, 'User not found');
+
+    await user.deleteOne();
+    return ok(res, { message: 'User removed' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listUsers, getUser, updateUser, remove };

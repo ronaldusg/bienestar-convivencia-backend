@@ -8,6 +8,7 @@ const router = Router();
 
 router.get('/', verifyToken, ctrl.listEvents);
 router.get('/:id', verifyToken, ctrl.getEvent);
+router.get('/:id/attendees', verifyToken, requireRole('admin'), ctrl.listAttendees);
 
 router.post(
   '/',

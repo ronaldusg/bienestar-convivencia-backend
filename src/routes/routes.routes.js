@@ -26,5 +26,6 @@ router.post(
 router.put('/:id', verifyToken, validate, ctrl.updateRoute);
 router.post('/:id/join', verifyToken, ctrl.joinRoute);
 router.post('/:id/leave', verifyToken, ctrl.leaveRoute);
+router.delete('/:id', verifyToken, ctrl.deleteRoute);
 
 module.exports = router;

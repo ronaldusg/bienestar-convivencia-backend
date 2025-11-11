@@ -1,10 +1,26 @@
 const Resource = require('../models/Resource');
 const { ok, created, notFound } = require('../utils/httpResponses');
 
-async function listResources(_req, res, next) {
+// async function listResources(_req, res, next) {
+//   try {
+//     const list = await Resource.find({ visible: true }).lean();
+//     return ok(res, list);
+//   } catch (err) {
+//     next(err);
+//   }
+// }
+
+async function listResources(req, res, next) {
   try {
-    const list = await Resource.find({ visible: true }).lean();
-    return ok(res, list);
+    // Permite incluir los ocultos con ?includeHidden=1
+    const includeHidden =
+      req.query.includeHidden === '1' || req.query.includeHidden === 'true';
+
+    // Si se pide includeHidden, no filtra por visible
+    const filter = includeHidden ? {} : { visible: true };
+
+    const list = await Resource.find(filter).lean();
+    return ok(res, { resources: list });
   } catch (err) {
     next(err);
   }

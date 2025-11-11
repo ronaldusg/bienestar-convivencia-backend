@@ -98,6 +98,44 @@ async function unregisterFromEvent(req, res, next) {
   }
 }
 
+// Lista de asistentes de un evento
+async function listAttendees(req, res, next) {
+  try {
+    const { id } = req.params;
+    // Intento 1: populate si el esquema tiene ref a User
+    let ev = await Event.findById(id).populate('attendees', 'name email').lean();
+    if (!ev) return notFound(res, 'Event not found');
+
+    let attendees;
+
+    if (Array.isArray(ev.attendees) && ev.attendees.length && typeof ev.attendees[0] === 'object') {
+      // Ya vienen poblados
+      attendees = ev.attendees.map(u => ({
+        id: u._id?.toString?.() ?? u.id,
+        name: u.name ?? '—',
+        email: u.email ?? '—',
+      }));
+    } else {
+      // Fallback: si no hay populate (por si el schema no tiene ref)
+      const userIds = (ev.attendees || []).map(a => a.toString());
+      const User = require('../models/User'); // ajusta si tu nombre de modelo es distinto
+      const users = userIds.length
+        ? await User.find({ _id: { $in: userIds } }).select('name email').lean()
+        : [];
+      attendees = users.map(u => ({
+        id: u._id?.toString?.() ?? u.id,
+        name: u.name ?? '—',
+        email: u.email ?? '—',
+      }));
+    }
+
+    // Mantén el mismo helper que ya usas (ok) para consistencia
+    return ok(res, { attendees });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listEvents,
   getEvent,
@@ -105,5 +143,6 @@ module.exports = {
   updateEvent,
   deleteEvent,
   registerToEvent,
-  unregisterFromEvent
+  unregisterFromEvent,
+  listAttendees
 };

@@ -5,7 +5,12 @@ const resourceSchema = new Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    type: { type: String, enum: ['news', 'resource'], default: 'resource' },
+    // type: { type: String, enum: ['news', 'resource'], default: 'resource' },
+    type: {
+      type: String,
+      enum: ['Salud', 'Académico', 'Financiero', 'Desarrollo', 'Cultura'],
+      required: true,
+    },
     contact: {
       name: String,
       email: String,
